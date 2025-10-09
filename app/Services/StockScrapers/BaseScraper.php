@@ -18,7 +18,7 @@ abstract class BaseScraper
     }
 
     abstract public function scrape();
-    abstract protected function exchangeCode(): string;
+    abstract public function exchangeCode(): string;
 
     protected function saveStock(array $data)
     {
@@ -60,35 +60,40 @@ abstract class BaseScraper
             );
 
             // 3. Create a new StockMetric entry (always insert — don't update)
-            StockMetric::create([
-                'stock_id' => $stock->id,
-                'recorded_at' => Carbon::parse($data['timestamp'] ?? now()),
+            StockMetric::updateOrCreate(
+                [
+                    // 👉 Unique fields to match an existing record
+                    'stock_id' => $stock->id,
+                    'recorded_at' => Carbon::parse($data['timestamp'] ?? now()),
+                ],
+                [
+                    // 👉 Fields to update if record exists
+                    'price' => $data['price'] ?? null,
+                    'change' => $data['change'] ?? null,
+                    'market_cap' => $data['marketCap'] ?? null,
+                    'revenue' => $data['revenue'] ?? null,
 
-                'price' => $data['price'] ?? null,
-                'change' => $data['change'] ?? null,
-                'market_cap' => $data['marketCap'] ?? null,
-                'revenue' => $data['revenue'] ?? null,
+                    'tr1m' => $data['tr1m'] ?? null,
+                    'tr6m' => $data['tr6m'] ?? null,
+                    'trYTD' => $data['trYTD'] ?? null,
+                    'tr1y' => $data['tr1y'] ?? null,
+                    'tr5y' => $data['tr5y'] ?? null,
+                    'tr10y' => $data['tr10y'] ?? null,
 
-                'tr1m' => $data['tr1m'] ?? null,
-                'tr6m' => $data['tr6m'] ?? null,
-                'trYTD' => $data['trYTD'] ?? null,
-                'tr1y' => $data['tr1y'] ?? null,
-                'tr5y' => $data['tr5y'] ?? null,
-                'tr10y' => $data['tr10y'] ?? null,
+                    'dps' => $data['dps'] ?? null,
+                    'dividend_yield' => $data['dividendYield'] ?? null,
+                    'dividend_growth' => $data['dividendGrowth'] ?? null,
+                    'ex_div_date' => $data['exDivDate'] ?? null,
+                    'payout_ratio' => $data['payoutRatio'] ?? null,
+                    'payout_frequency' => $data['payoutFrequency'] ?? null,
 
-                'dps' => $data['dps'] ?? null,
-                'dividend_yield' => $data['dividendYield'] ?? null,
-                'dividend_growth' => $data['dividendGrowth'] ?? null,
-                'ex_div_date' => $data['exDivDate'] ?? null,
-                'payout_ratio' => $data['payoutRatio'] ?? null,
-                'payout_frequency' => $data['payoutFrequency'] ?? null,
-
-                'volume' => $data['volume'] ?? null,
-                'low_52' => $data['low52'] ?? null,
-                'low_52_ch' => $data['low52ch'] ?? null,
-                'high_52' => $data['high52'] ?? null,
-                'high_52_ch' => $data['high52ch'] ?? null,
-            ]);
+                    'volume' => $data['volume'] ?? null,
+                    'low_52' => $data['low52'] ?? null,
+                    'low_52_ch' => $data['low52ch'] ?? null,
+                    'high_52' => $data['high52'] ?? null,
+                    'high_52_ch' => $data['high52ch'] ?? null,
+                ]
+            );
 
             Log::info("Stock data saved successfully for {$stock->ticker}");
         } catch (\Exception $e) {

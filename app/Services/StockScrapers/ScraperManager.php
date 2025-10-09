@@ -7,21 +7,20 @@ use Illuminate\Support\Facades\Log;
 
 class ScraperManager
 {
-    public function scrape(StockExchange $exchange)
+ public function scrape(StockExchange $exchange)
     {
-        $scraper = $this->resolveScraper($exchange->code);
+        $scraper = new StockAnalysisScraper($exchange->code);
 
-        if ($scraper) {
-            Log::info("Using scraper for exchange: {$exchange->name} ({$exchange->code})");
+        Log::info("🚀 Scraping started for exchange: {$exchange->name} ({$exchange->code})");
+
+        try {
             $scraper->scrape();
+            Log::info("✅ Scraping completed for exchange: {$exchange->name} ({$exchange->code})");
+        } catch (\Throwable $e) {
+            Log::error("❌ Scraping failed for {$exchange->name} ({$exchange->code})", [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
-    }
-
-    protected function resolveScraper(string $exchangeCode): ?BaseScraper
-    {
-        return match (strtolower($exchangeCode)) {
-            'nase' => new NseScraper(),
-            default => null,
-        };
     }
 }

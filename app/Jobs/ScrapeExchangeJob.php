@@ -2,10 +2,11 @@
 
 namespace App\Jobs;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use App\Services\StockScrapers\ScraperManager;
-use App\Models\{StockExchange, Stock, StockMetric};
+use App\Models\{StockExchange};
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class ScrapeExchangeJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
 
     public function __construct(public StockExchange $exchange) {}
 

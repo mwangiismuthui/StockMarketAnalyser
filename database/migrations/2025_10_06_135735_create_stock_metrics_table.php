@@ -4,23 +4,20 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::create('stock_metrics', function (Blueprint $table) {
-              $table->id();
+            $table->id();
             $table->foreignId('stock_id')->constrained()->cascadeOnDelete();
-
             $table->timestamp('recorded_at')->comment('Timestamp when the data was recorded');
-
-            $table->decimal('price', 15, 4)->nullable();
+            $table->decimal('price', 20, 4)->nullable();
             $table->decimal('change', 10, 4)->nullable();
-            $table->unsignedBigInteger('market_cap')->nullable();
-            $table->unsignedBigInteger('revenue')->nullable();
+            $table->bigInteger('market_cap')->nullable();
+            $table->bigInteger('revenue')->nullable();
 
             // Total Returns
             $table->decimal('tr1m', 10, 3)->nullable();
@@ -40,9 +37,9 @@ return new class extends Migration
 
             // Volume & 52-week ranges
             $table->unsignedBigInteger('volume')->nullable();
-            $table->decimal('low_52', 10, 3)->nullable();
+            $table->decimal('low_52', 20, 4)->nullable();
             $table->decimal('low_52_ch', 10, 4)->nullable();
-            $table->decimal('high_52', 10, 3)->nullable();
+            $table->decimal('high_52', 20, 4)->nullable();
             $table->decimal('high_52_ch', 10, 4)->nullable();
 
             $table->timestamps();
